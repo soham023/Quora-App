@@ -6,7 +6,7 @@ spring:
       host: localhost
       port: 27017
       database: quora_db
-  #    I've no username/password currently
-  #    username: root
-  #    password: root
+      #   I've no username/password currently
+      #    username: root
+      #    password: root
       auto-index-creation: true

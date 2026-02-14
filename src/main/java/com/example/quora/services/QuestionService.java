@@ -7,8 +7,11 @@ import com.example.quora.dtos.QuestionResponseDTO;
 import com.example.quora.models.Question;
 import com.example.quora.repositories.QuestionRepository;
 import com.example.quora.utils.CursorUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,11 +24,17 @@ import java.time.LocalDateTime;
 @Service
 public class QuestionService implements IQuestionService{
 
-    private final QuestionRepository questionRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
-    public QuestionService(QuestionRepository _questionRepository){
-        this.questionRepository =_questionRepository;
-    }
+
+    @Autowired
+    private ReactiveMongoTemplate mongoTemplate;
+
+
+//    public QuestionService(QuestionRepository _questionRepository){
+//        this.questionRepository =_questionRepository;
+//    }
 
     @Override
     public Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionRequestDTO) {
@@ -37,8 +46,8 @@ public class QuestionService implements IQuestionService{
                 .updatedAt(Instant .now())
                 .build();
 
-//        now we need questionRepository to save
-        return questionRepository.save(question)
+//        now we need mongoTemplate?questionRepository to save
+        return mongoTemplate.save(question)
                 .map(QuestionAdapter::toQuestionResponseDTO)
         //        as this is a reactive code we can decide at this point what we should do at success or failure
                 .doOnSuccess(response -> System.out.println("Question created successfully : " + response))

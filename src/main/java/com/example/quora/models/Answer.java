@@ -14,32 +14,33 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 // this annotation is used to mark the particular model valid for mongodb,
 // and it has a property collections by which you can decide at which collection you want to store this model as a document
-@Document (collection = "questions")
-public class Question {
+@Document(collection = "answers")
+public class Answer {
 
     @Id
     private String id;
 
-    //for this annotation to work, have to add a dependency on build.gradle 'org.springframework.boot:spring-boot-starter-validation'
-    @NotBlank(message = "Title is required")
-    @Size(min = 10, max = 100, message = "Title must be between 10 and 100 characters")
-    private String questionTitle;
-
-    @NotBlank
-    @Size(min = 10, max = 100, message = "Content must be between 10 and 1000 characters")
+    @NotBlank(message = "Content is required")
+    @Size(min = 10, max = 1000, message = "Content must be between 10 and 1000 Characters")
     private String content;
+
+    // A Question can have multiple answers but an answer belongs to a single question.
+    // that means each answer will be having associated question's id with itself.
+    private String questionId;
 
     @CreatedDate
     private Instant createdAt;
 
     @LastModifiedDate
-    private Instant  updatedAt;
+    private Instant updatedAt;
+
 
 
 
