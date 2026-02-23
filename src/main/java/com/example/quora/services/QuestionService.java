@@ -10,7 +10,7 @@ import com.example.quora.utils.CursorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.MongoTemplate;
+
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -91,6 +91,15 @@ public class QuestionService implements IQuestionService{
                     .doOnError(error -> System.out.println("Error fetching questions : " + error))
                     .doOnComplete(() -> System.out.println("Questions Fetched successfully"));
         }
+    }
+
+    @Override
+    public Mono<QuestionResponseDTO>  getQuestionById(String id) {
+
+        return questionRepository.findById(id)
+                .map(QuestionAdapter::toQuestionResponseDTO)
+                .doOnError(error -> System.out.println("Error fetching questions : " + error))
+                .doOnSuccess(response -> System.out.println("Question fetched successfully : "+ response));
     }
 
 }

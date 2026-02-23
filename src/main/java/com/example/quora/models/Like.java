@@ -36,6 +36,11 @@ public class Like {
     @CreatedDate
     private Instant createdAt;
 
+    // web
+
+
+    // mobile
+
 
 
 }

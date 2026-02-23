@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 @Builder
@@ -34,6 +35,13 @@ public class Question {
     @NotBlank
     @Size(min = 10, max = 100, message = "Content must be between 10 and 1000 characters")
     private String content;
+
+
+    // we'll update it in an asynchronous way that's why we dont need to bother if it's atomic or not, otherwise we could have kept it AtomicInteger
+    // private AtomicInteger views;
+    // try to ensure there is no concurrency related issue
+    // because we know we'll update it in an asynchronous way, that's why we ll keep it as Integer.
+    private Integer views;
 
     @CreatedDate
     private Instant createdAt;

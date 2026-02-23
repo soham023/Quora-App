@@ -9,4 +9,4 @@ spring:
       #   I've no username/password currently
       #    username: root
       #    password: root
-      auto-index-creation: true
+    auto-index-creation: true
