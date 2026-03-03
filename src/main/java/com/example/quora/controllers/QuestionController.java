@@ -22,6 +22,13 @@ public class QuestionController {
 //
 //    }
 
+    @GetMapping("/{id}")
+    public Mono<QuestionResponseDTO> getQuestionById(@PathVariable String id){
+        return questionService.getQuestionById(id)
+                .doOnError(error -> System.out.println("Error fetching questions : " + error))
+                .doOnSuccess(response -> System.out.println("Questions fetched successfully"));
+    }
+
     @PostMapping()
     public Mono<QuestionResponseDTO> createQuestion(@RequestBody QuestionRequestDTO questionRequestDTO){
         return this.questionService.createQuestion(questionRequestDTO)

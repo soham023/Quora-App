@@ -4,7 +4,10 @@ package com.example.quora.services;
 import com.example.quora.adapters.QuestionAdapter;
 import com.example.quora.dtos.QuestionRequestDTO;
 import com.example.quora.dtos.QuestionResponseDTO;
+import com.example.quora.events.ViewCountEvent;
+import com.example.quora.models.LikeableType;
 import com.example.quora.models.Question;
+import com.example.quora.producers.KafkaEventProducer;
 import com.example.quora.repositories.QuestionRepository;
 import com.example.quora.utils.CursorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,12 @@ public class QuestionService implements IQuestionService{
 
     @Autowired
     private ReactiveMongoTemplate mongoTemplate;
+
+    private final KafkaEventProducer kafkaEventProducer;
+
+    public QuestionService(KafkaEventProducer _kafkaEventProducer) {
+        this.kafkaEventProducer = _kafkaEventProducer;
+    }
 
 
 //    public QuestionService(QuestionRepository _questionRepository){
@@ -99,7 +108,13 @@ public class QuestionService implements IQuestionService{
         return questionRepository.findById(id)
                 .map(QuestionAdapter::toQuestionResponseDTO)
                 .doOnError(error -> System.out.println("Error fetching questions : " + error))
-                .doOnSuccess(response -> System.out.println("Question fetched successfully : "+ response));
+                .doOnSuccess(response -> {
+                    System.out.println("Question fetched successfully : "+ response);
+                    // create a viewcount event
+                    ViewCountEvent viewCountEvent = new ViewCountEvent(id, LikeableType.QUESTION, Instant.now());
+                    // then we can call KafkaEventProducer and publish the event
+                    kafkaEventProducer.publishViewCount(viewCountEvent);
+                });
     }
 
 }

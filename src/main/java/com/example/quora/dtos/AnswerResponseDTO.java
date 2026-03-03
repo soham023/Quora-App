@@ -17,6 +17,8 @@ public class AnswerResponseDTO {
 
     private String content;
 
+    private String questionId;
+
     private Instant createdAt;
 
     private Instant updatedAt;
