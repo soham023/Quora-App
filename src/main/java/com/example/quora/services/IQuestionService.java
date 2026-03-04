@@ -2,8 +2,11 @@ package com.example.quora.services;
 
 import com.example.quora.dtos.QuestionRequestDTO;
 import com.example.quora.dtos.QuestionResponseDTO;
+import com.example.quora.models.QuestionElasticDocument;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 public interface IQuestionService {
 
@@ -17,4 +20,5 @@ public interface IQuestionService {
     // whenever someone will hit the getQuestionById -> viewcount will increase.(either by Immediate Consistency / Eventual Consistency)
     public Mono<QuestionResponseDTO> getQuestionById(String id);
 
+    List<QuestionElasticDocument> searchQuestionsByElasticSearch(String query);
 }

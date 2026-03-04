@@ -26,3 +26,6 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.value.default.type: com.example.quora.events.ViewCountEvent
+
+  elasticsearch:
+    uris: http://localhost:9200

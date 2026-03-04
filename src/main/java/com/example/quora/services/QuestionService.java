@@ -7,7 +7,9 @@ import com.example.quora.dtos.QuestionResponseDTO;
 import com.example.quora.events.ViewCountEvent;
 import com.example.quora.models.LikeableType;
 import com.example.quora.models.Question;
+import com.example.quora.models.QuestionElasticDocument;
 import com.example.quora.producers.KafkaEventProducer;
+import com.example.quora.repositories.QuestionDocumentRepository;
 import com.example.quora.repositories.QuestionRepository;
 import com.example.quora.utils.CursorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class QuestionService implements IQuestionService{
@@ -34,9 +37,16 @@ public class QuestionService implements IQuestionService{
     @Autowired
     private ReactiveMongoTemplate mongoTemplate;
 
+
+    private final IQuestionIndexService questionIndexService;
+
+    private final QuestionDocumentRepository questionDocumentRepository;
+
     private final KafkaEventProducer kafkaEventProducer;
 
-    public QuestionService(KafkaEventProducer _kafkaEventProducer) {
+    public QuestionService(IQuestionIndexService questionIndexService, QuestionDocumentRepository questionDocumentRepository, KafkaEventProducer _kafkaEventProducer) {
+        this.questionIndexService = questionIndexService;
+        this.questionDocumentRepository = questionDocumentRepository;
         this.kafkaEventProducer = _kafkaEventProducer;
     }
 
@@ -57,8 +67,14 @@ public class QuestionService implements IQuestionService{
 
 //        now we need mongoTemplate/questionRepository to save
         return mongoTemplate.save(question)
-                .map(QuestionAdapter::toQuestionResponseDTO)
+                //once the question is saved, we world like to do some mapping
+                .map( savedQuestion -> {
+                    questionIndexService.createQuestionIndex(savedQuestion); // dumping the question inside elastic search
+                    return QuestionAdapter.toQuestionResponseDTO(savedQuestion);
+                })
+        //        .map(QuestionAdapter::toQuestionResponseDTO)
         //        as this is a reactive code we can decide at this point what we should do at success or failure
+
                 .doOnSuccess(response -> System.out.println("Question created successfully : " + response))
                 .doOnError(error -> System.out.println("Error creating question : "+ error));
 
@@ -115,6 +131,11 @@ public class QuestionService implements IQuestionService{
                     // then we can call KafkaEventProducer and publish the event
                     kafkaEventProducer.publishViewCount(viewCountEvent);
                 });
+    }
+
+    @Override
+    public List<QuestionElasticDocument> searchQuestionsByElasticSearch(String query) {
+        return questionDocumentRepository.findByTitleContainingOrContentContaining(query, query);
     }
 
 }

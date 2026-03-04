@@ -4,8 +4,7 @@ package com.example.quora.configurationsKafka;
 import com.example.quora.events.ViewCountEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.BytesDeserializer;
-import org.apache.kafka.common.serialization.BytesSerializer;
+
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
@@ -55,8 +53,8 @@ public class KafkaConfig {
         // now you are going to decide all the kafka related properties
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         // key serialiser
-        // When you are dumping your data into kafka -> you need to serialise your data.
-        // key here is a string, so I want a key serialiser
+        // When you are dumping your data into kafka -> you need to serialize your data.
+        // key here is a string, so I want a key serializer
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         // value serializer
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
@@ -109,7 +107,7 @@ public class KafkaConfig {
     /* ConcurrentKafkaListenerContainerFactory is a Spring Kafka factory class that creates listener containers
        for methods annotated with @KafkaListener.*/
 /*    It is a Spring Kafka factory that creates concurrent Kafka listener containers
-    for methods annotated with @KafkaListener, enabling multi-threaded message consumption. */
+    for methods annotated with @KafkaListener, enabling multithreaded message consumption. */
     // It configures how your Kafka consumers behave when using @KafkaListener.
 
     /*

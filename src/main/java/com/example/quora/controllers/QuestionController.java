@@ -2,11 +2,14 @@ package com.example.quora.controllers;
 
 import com.example.quora.dtos.QuestionRequestDTO;
 import com.example.quora.dtos.QuestionResponseDTO;
+import com.example.quora.models.QuestionElasticDocument;
 import com.example.quora.services.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -75,5 +78,10 @@ public class QuestionController {
     }
 //use flux
 // include pagination
+
+    @GetMapping("/elasticsearch")
+    public List<QuestionElasticDocument> searchQuestionsByElasticSearch(@RequestParam String query){
+        return questionService.searchQuestionsByElasticSearch(query);
+    }
 
 }
